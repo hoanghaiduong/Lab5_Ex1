@@ -1,6 +1,6 @@
 const sendgrid = require("@sendgrid/mail");
 sendgrid.setApiKey(
-  "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"
+//   "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"
 );
 
 exports.sendEmail = async (req, res) => {
