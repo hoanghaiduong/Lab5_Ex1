@@ -34,7 +34,7 @@ app.use("/api/external", externalApiRoutes);
 setupSwagger(app);
 
 sequelize
-  .sync({ force: true, alter: true }) // Set force: true to reset the database
+  .sync({ force: false, alter: true }) // Set force: true to reset the database
   .then(() => {
     console.log("Database tables synced.");
   })
@@ -48,3 +48,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+

@@ -14,6 +14,31 @@ exports.getAllUsers = async (req, res) => {
     res.status(400).json(createResponse("GET", 400, {}, err.message));
   }
 };
+exports.getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find user by ID
+    const user = await User.findByPk(id);
+
+    if (!user) {
+      return res.status(404).json({
+        status: "error",
+        message: `User with ID ${id} not found`,
+      });
+    }
+
+    res.json({
+      status: "success",
+      data: user,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: err.message,
+    });
+  }
+};
 
 // Create a new user
 exports.createUser = async (req, res) => {
@@ -29,21 +54,37 @@ exports.createUser = async (req, res) => {
     res.status(400).json(createResponse("POST", 400, {}, err.message));
   }
 };
-
-// Update an existing user
 exports.updateUser = async (req, res) => {
   try {
     const { id } = req.params;
     const { FullName, Address, RegistrationDate } = req.body;
-    const user = await User.update(
+
+    // Perform the update
+    const [rowsUpdated] = await User.update(
       { FullName, Address, RegistrationDate },
       { where: { UserId: id } }
     );
-    res.json({ message: "User updated successfully", user });
+
+    // Check if any rows were updated
+    if (rowsUpdated === 0) {
+      return res
+        .status(404)
+        .json(createResponse("PUT", 404, {}, "User not found"));
+    }
+
+    // Fetch the updated user
+    const updatedUser = await User.findByPk(id);
+
+    res.json(
+      createResponse("PUT", 200, {
+        User: updatedUser,
+      })
+    );
   } catch (err) {
     res.status(400).json(createResponse("PUT", 400, {}, err.message));
   }
 };
+
 
 // Delete a user
 exports.deleteUser = async (req, res) => {
